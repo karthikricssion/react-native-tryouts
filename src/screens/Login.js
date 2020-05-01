@@ -8,20 +8,22 @@ import {
     TouchableOpacity
 } from 'react-native'
 
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { updateEmail, updatePassword, login, getUser } from '../actions/user'
+
 import Firebase from '../config/Firebase'
 
 class Login extends React.Component {
-    state = {
-        email: '',
-        password: ''
-    }
-
-    handleLogin = () => {
-        const { email, password } = this.state
-        Firebase.auth()
-            .signInWithEmailAndPassword(email, password)
-            .then(() => this.props.navigation.navigate('Profile'))
-            .catch(error => console.log(error))
+    componentDidMount = () => {
+        Firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                this.props.getUser(user.uid)
+                if (this.props.user != null) {
+                    this.props.navigation.navigate('Profile')
+                }
+            }
+        })
     }
 
     render() {
@@ -29,21 +31,21 @@ class Login extends React.Component {
             <View style={styles.container}>
                 <TextInput 
                     style={styles.inputBox}
-                    value={this.state.email}
+                    value={this.props.user.email}
                     placeholder='Email'
                     autoCapitalize='none'
-                    onChangeText={email => this.setState({ email })}
+                    onChangeText={email => this.props.updateEmail(email)}
                 />
 
                 <TextInput 
                     style={styles.inputBox}
-                    value={this.state.password}
+                    value={this.props.user.password}
                     placeholder='Password'
-                    onChangeText={password => this.setState({ password })}
+                    onChangeText={password => this.props.updatePassword(password)}
                     secureTextEntry={true}
                 />
 
-                <TouchableOpacity style={styles.button} onPress={this.handleLogin}>
+                <TouchableOpacity style={styles.button} onPress={this.props.login()}>
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
 
@@ -97,4 +99,17 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Login
+const mapDispatchToProps = dispatch => {
+    return bindActionCreators({ updateEmail, updatePassword, login, getUser }, dispatch)
+}
+
+const mapStateToProps = state => {
+    return {
+        user: state.user
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Login)
