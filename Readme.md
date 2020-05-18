@@ -3,3 +3,6 @@ https://heartbeat.fritz.ai/how-to-build-an-email-authentication-app-with-firebas
 https://console.firebase.google.com/u/1/project/news-app-auth-training/authentication/users
 
 https://reactnavigation.org/docs/upgrading-from-4.x/#switch-navigator
+
+Video Tutorials
+https://www.youtube.com/watch?v=Hln37dE19bs
